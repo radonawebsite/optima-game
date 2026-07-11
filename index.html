@@ -2,32 +2,178 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Optima Code 3D Metaverse</title>
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optima Code | Project: Void Mind</title>
+    <style>
+        /* كاع الستايل مجموع هنايا */
+        :root {
+            --bg-color: #07070a;
+            --panel-bg: rgba(13, 13, 18, 0.85);
+            --neon-purple: #8b5cf6;
+            --neon-cyan: #06b6d4;
+            --text-color: #e2e8f0;
+        }
+
+        body, html {
+            margin: 0; padding: 0; width: 100%; height: 100%;
+            background-color: var(--bg-color); color: var(--text-color);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* خلفية تفاعلية بيكسل خفيفة بالـ CSS */
+        .ambient-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.08), transparent 60%);
+            z-index: -1;
+        }
+
+        /* الهيدر أو البار الفوقاني */
+        header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px 40px; background: rgba(7, 7, 10, 0.9);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: sticky; top: 0; z-index: 100;
+        }
+
+        .logo { font-weight: bold; font-size: 20px; color: var(--neon-cyan); letter-spacing: 1px; }
+
+        /* سيكشن البطل الرئيسي (Hero Section) */
+        .hero {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; padding: 100px 20px 60px 20px;
+        }
+
+        .game-title {
+            font-size: 48px; margin: 0; font-weight: 800;
+            background: linear-gradient(45deg, var(--neon-cyan), var(--neon-purple));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(6, 182, 212, 0.2);
+            animation: float 4s ease-in-out infinite;
+        }
+
+        .tagline { color: #94a3b8; font-size: 16px; margin-top: 15px; max-width: 600px; }
+
+        /* معرض الشخصيات والماب الافتراضي */
+        .content-container {
+            max-width: 1100px; margin: 0 auto; padding: 40px 20px;
+        }
+
+        .section-title {
+            font-size: 24px; color: var(--neon-purple); margin-bottom: 30px;
+            border-right: 4px solid var(--neon-cyan); padding-right: 15px;
+        }
+
+        .grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px;
+        }
+
+        .card {
+            background: var(--panel-bg); border: 1px solid rgba(255, 255, 255, 0.03);
+            border-radius: 12px; padding: 25px; transition: all 0.3s ease;
+            position: relative; overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-5px); border-color: var(--neon-cyan);
+            box-shadow: 0 10px 20px rgba(6, 182, 212, 0.05);
+        }
+
+        .card h3 { margin-top: 0; color: #fff; }
+        .card p { color: #94a3b8; font-size: 14px; line-height: 1.6; }
+
+        /* مشغل الصوتيات التجريبي ف السيت */
+        .audio-player {
+            background: rgba(139, 92, 246, 0.1); border: 1px solid var(--neon-purple);
+            border-radius: 8px; padding: 15px; display: flex; align-items: center;
+            justify-content: space-between; margin-top: 20px;
+        }
+
+        .play-btn {
+            background: var(--neon-cyan); border: none; padding: 8px 20px;
+            border-radius: 6px; color: #000; font-weight: bold; cursor: pointer;
+        }
+
+        /* أنيميشن خفيفة */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        @media (max-width: 768px) {
+            .game-title { font-size: 32px; }
+            header { padding: 20px; }
+        }
+    </style>
 </head>
 <body>
-    <div id="ui-overlay">
-        <h1>Optima Code</h1>
-        <p>المقر الافتراضي ثلاثي الأبعاد</p>
-        <div id="players-count">الزوار حالياً: 1</div>
+
+    <div class="ambient-bg"></div>
+
+    <header>
+        <div class="logo">OPTIMA CODE</div>
+        <div style="font-size: 13px; color: var(--neon-purple);">DEV LOG // V1.0</div>
+    </header>
+
+    <div class="hero">
+        <h1 class="game-title">PROJECT: VOID MIND</h1>
+        <p class="tagline">لعبة تفاعلية 2D بنمط بيكسل آرت وقصة نفسية عميقة. استكشف ذكريات مفقودة وتجاوز عقبات العقل الباطن وسط مابات مرسومة بعناية.</p>
     </div>
 
-    <div id="crosshair"></div>
+    <div class="content-container">
+        <h2 class="section-title">ملفات تطوير المشروع</h2>
+        
+        <div class="grid">
+            <!-- الكارت 1: تصميم الشخصيات -->
+            <div class="card">
+                <h3>🎭 تصميم الشخصيات (Concept Art)</h3>
+                <p>مرحلة رسم وتصميم الأبطال والكيانات داخل اللعبة. نركز على طابع غامض يعبر عن الحالة النفسية لكل شخصية، مع تجهيز الأصول لعرضها لاحقاً كـ Time-lapse أونلاين.</p>
+            </div>
 
-    <div id="start-screen">
-        <h2>انقر للدخول للمتحف</h2>
-        <p>💻 <b>للحاسوب:</b> الماوس للتوجيه و W A S D للتحرك.<br>📱 <b>للهاتف:</b> استخدم الجويستيك للتحرك واسحب على يمين الشاشة للدوران.</p>
+            <!-- الكارت 2: عوالم اللعبة -->
+            <div class="card">
+                <h3>🗺️ المابات والبيئة (Parallax Mapping)</h3>
+                <p>بناء بيئات 2D تفاعلية ومستقرة زيرو قلتشات، بالاعتماد على طبقات متعددة لتعطي عمقاً بصرياً (Parallax Effect) يخلي التجربة غامرة ومثيرة للاهتمام.</p>
+            </div>
+
+            <!-- الكارت 3: الموسيقى التصويرية -->
+            <div class="card">
+                <h3>🎵 الأجواء والموسيقى (Soundtrack)</h3>
+                <p>دمج أنغام وموسيقى تصويرية غامضة (Dark Alternative) تتماشى مع أحداث اللعبة النفسية وتزيد من حماس وتركيز اللاعب أثناء الاستكشاف.</p>
+                
+                <div class="audio-player">
+                    <span id="track-status" style="font-size: 12px; color: #cbd5e1;">المشغل الافتراضي جاهز</span>
+                    <button class="play-btn" onclick="toggleAudio()">تشغيل</button>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <!-- تحكم الهاتف -->
-    <div id="mobile-controls"><div id="joystick-knob"></div></div>
-    <div id="touch-zone-right"></div>
-
-    <div id="canvas-container"></div>
-
-    <!-- المكتبات -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script type="module" src="app.js"></script>
+    <!-- كود الجافاسكريبت البسيط والمستقر -->
+    <script>
+        let isPlaying = false;
+        // صوت خفيف ومستقر كمثال (خالٍ من أي مشاكل)
+        const audio = new Audio('https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3'); 
+        
+        function toggleAudio() {
+            const status = document.getElementById('track-status');
+            const btn = document.querySelector('.play-btn');
+            
+            if(!isPlaying) {
+                audio.play().then(() => {
+                    isPlaying = true;
+                    status.innerText = "جاري تشغيل الموسيقى المرافقة...";
+                    btn.innerText = "إيقاف";
+                    btn.style.background = "#e43f5a";
+                }).catch(e => console.log("تحتاج للتفاعل مع الشاشة أولاً"));
+            } else {
+                audio.pause();
+                isPlaying = false;
+                status.innerText = "تم إيقاف الموسيقى";
+                btn.innerText = "تشغيل";
+                btn.style.background = "var(--neon-cyan)";
+            }
+        }
+    </script>
 </body>
 </html>
