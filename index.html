@@ -2,10 +2,80 @@
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Optima Game</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #222;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        canvas {
+            border: 4px solid #fff;
+            background-color: #111;
+        }
+    </style>
 </head>
 <body>
-    <h1>مرحبا بك في مشروع Optima Game</h1>
-    <p>هذا الموقع قيد التطوير على كالي لينكس.</p>
+
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // إحداثيات اللاعب (المربع)
+        let player = {
+            x: 400,
+            y: 300,
+            size: 40,
+            speed: 5
+        };
+
+        // تتبع الأزرار المضغوطة
+        let keys = {};
+
+        window.addEventListener('keydown', (e) => keys[e.key] = true);
+        window.addEventListener('keyup', (e) => keys[e.key] = false);
+
+        // تحديث منطق اللعبة (الحركة)
+        function update() {
+            if (keys['ArrowUp'] || keys['w']) player.y -= player.speed;
+            if (keys['ArrowDown'] || keys['s']) player.y += player.speed;
+            if (keys['ArrowLeft'] || keys['a']) player.x -= player.speed;
+            if (keys['ArrowRight'] || keys['d']) player.x += player.speed;
+
+            // منع اللاعب من الخروج من الشاشة
+            if (player.x < 0) player.x = 0;
+            if (player.y < 0) player.y = 0;
+            if (player.x + player.size > canvas.width) player.x = canvas.width - player.size;
+            if (player.y + player.size > canvas.height) player.y = canvas.height - player.size;
+        }
+
+        // رسم العناصر على الشاشة
+        function draw() {
+            // مسح الشاشة في كل إطار
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // رسم اللاعب (مربع أحمر كمثال)
+            ctx.fillStyle = '#ff4757';
+            ctx.fillRect(player.x, player.y, player.size, player.size);
+        }
+
+        // حلقة اللعبة المستمرة (Game Loop)
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        // تشغيل اللعبة
+        gameLoop();
+    </script>
 </body>
 </html>
