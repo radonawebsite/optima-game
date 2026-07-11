@@ -1,28 +1,33 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Optima Code 3D Virtual Museum</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Optima Code 3D Metaverse</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <div id="ui-overlay">
-        <h1>OPTIMA CODE</h1>
-        <p>متحف افتراضي ثلاثي الأبعاد</p>
+        <h1>Optima Code</h1>
+        <p>المقر الافتراضي ثلاثي الأبعاد</p>
+        <div id="players-count">الزوار حالياً: 1</div>
     </div>
 
     <div id="crosshair"></div>
-    <div id="instructions">انقر على الشاشة للدخول والتحرك بـ W, A, S, D + الماوس للتوجيه</div>
+
+    <div id="start-screen">
+        <h2>انقر للدخول للمتحف</h2>
+        <p>💻 <b>للحاسوب:</b> الماوس للتوجيه و W A S D للتحرك.<br>📱 <b>للهاتف:</b> استخدم الجويستيك للتحرك واسحب على يمين الشاشة للدوران.</p>
+    </div>
+
+    <!-- تحكم الهاتف -->
+    <div id="mobile-controls"><div id="joystick-knob"></div></div>
+    <div id="touch-zone-right"></div>
 
     <div id="canvas-container"></div>
 
-    <!-- جلب مكتبة Three.js ومكون التحكم بالماوس عبر الـ CDN -->
+    <!-- المكتبات -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/PointerLockControls.js"></script>
-    
-    <!-- ربط محرك المعرض الافتراضي -->
-    <script src="app.js"></script>
+    <script type="module" src="app.js"></script>
 </body>
 </html>
