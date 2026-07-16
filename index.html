@@ -400,6 +400,33 @@
             z-index: 5;
         }
 
+        /* زر فك كتم الصوت في الهواتف لمنع تعليق البث */
+        .unmute-phone-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            z-index: 100;
+            background: rgba(0, 102, 255, 0.95);
+            color: white;
+            border: none;
+            border-radius: 30px;
+            padding: 10px 16px;
+            font-size: 12px;
+            font-weight: 800;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            cursor: pointer;
+            transition: all 0.2s;
+            animation: pulseUnmute 2s infinite;
+        }
+        @keyframes pulseUnmute {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
         /* حقل إدخال الرابط */
         .video-selector {
             display: flex;
@@ -591,6 +618,10 @@
                 height: 100% !important; /* ملء المساحة بالكامل عمودياً */
                 border-top: none;
             }
+            /* إخفاء زر الصوت ف الحواسب حيت كيخدم ديما تلقائي */
+            .unmute-phone-btn {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -682,6 +713,11 @@
                 <!-- قسم الميديا (الفيديو والتحكم بالرابط) -->
                 <div class="video-section">
                     <div id="video-container">
+                        <!-- زر تفعيل الصوت للموبايل (يختفي تلقائيا بعد الضغط) -->
+                        <button class="unmute-phone-btn" id="btn-unmute-phone" onclick="unmuteOnPhone()">
+                            <i data-lucide="volume-2"></i>
+                            <span>تفعيل الصوت والسينما 🔊</span>
+                        </button>
                         <div id="player"></div>
                     </div>
                     
@@ -772,6 +808,16 @@
             setTimeout(() => { toast.remove(); }, 3000);
         }
 
+        // دالة تشغيل الصوت للموبايل عند تفعيلها يدوياً
+        window.unmuteOnPhone = function() {
+            if (ytPlayer && typeof ytPlayer.unMute === 'function') {
+                ytPlayer.unMute();
+                ytPlayer.playVideo();
+                document.getElementById('btn-unmute-phone').style.display = 'none';
+                showToast("تم تفعيل الصوت ومزامنة السينما بنجاح!", "success");
+            }
+        }
+
         // إعدادات التبرع المالي
         const presetButtons = document.querySelectorAll('.btn-preset');
         const customDonationBox = document.getElementById('custom-donation-box');
@@ -850,9 +896,17 @@
                 height: '100%',
                 width: '100%',
                 videoId: '5qap5aO4i9A',
-                playerVars: { 'autoplay': 1, 'controls': 1, 'playsinline': 1 },
+                playerVars: { 
+                    'autoplay': 1, 
+                    'controls': 1, 
+                    'playsinline': 1,
+                    'mute': 1 /* تشغيل الفيديو صامت فالبداية لتخطي حظر الهواتف الذكية للـ Autoplay */
+                },
                 events: {
-                    'onReady': (e) => { e.target.unMute(); },
+                    'onReady': (e) => {
+                        // محاولة تفعيل الفيديو صامت لضمان أنه يدور ولا يتوقف فالموبايل
+                        e.target.playVideo();
+                    },
                     'onStateChange': onPlayerStateChange
                 }
             });
@@ -977,6 +1031,8 @@
 
             const videoId = extractYouTubeId(urlValue);
             if (videoId) {
+                // إظهار زر فك كتم الصوت ف الهواتف مجددا عند تحميل فيديو جديد لضمان المزامنة
+                document.getElementById('btn-unmute-phone').style.display = 'inline-flex';
                 triggerVideoChange(videoId);
             } else {
                 showToast("الرجاء إدخال رابط يوتيوب صالح ومباشر!", "danger");
@@ -1020,6 +1076,8 @@
                     ignoreNextStateChange = true;
 
                     if (data.action === 'load') {
+                        // إظهار زر الصوت دائما ف الهواتف عند استلام فيديو جديد من الصديق
+                        document.getElementById('btn-unmute-phone').style.display = 'inline-flex';
                         ytPlayer.loadVideoById(sanitizeInput(data.videoId), 0);
                         setTimeout(() => { ignoreNextStateChange = false; }, 1000);
                         return;
