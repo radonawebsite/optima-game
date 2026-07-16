@@ -167,7 +167,6 @@
             border-color: var(--accent-blue);
         }
 
-        /* إصلاح اتجاه كود الاتصال المدخل */
         #target-code-input {
             direction: ltr !important;
             text-align: center;
@@ -209,7 +208,6 @@
             margin-bottom: 8px;
             font-weight: 700;
         }
-        /* منع انقلاب كود المستخدم */
         .my-code-value {
             font-size: 28px;
             font-weight: 800;
@@ -370,14 +368,12 @@
             box-shadow: 0 20px 50px rgba(0,0,0,0.8);
         }
 
-        /* نظام العرض المشترك بين الحاسوب والهاتف */
         .cinema-grid {
             display: flex;
             flex-direction: column;
             width: 100%;
         }
 
-        /* قسم الفيديو وأدوات التحكم */
         .video-section {
             flex: 1;
             display: flex;
@@ -388,7 +384,7 @@
         #video-container {
             width: 100%;
             position: relative;
-            padding-bottom: 56.25%; /* نسبة 16:9 الافتراضية للهاتف */
+            padding-bottom: 56.25%; 
             background: #000;
         }
 
@@ -400,7 +396,7 @@
             z-index: 5;
         }
 
-        /* زر تفعيل الصوت والسينما فالهواتف */
+        /* زر التفعيل متوافق 100% مع iOS */
         .unmute-phone-btn {
             position: absolute;
             top: 50%;
@@ -414,7 +410,7 @@
             padding: 14px 22px;
             font-size: 13px;
             font-weight: 800;
-            display: none; /* يظهر فقط عند وجود فيديو يحتاج تفعيل */
+            display: none; 
             align-items: center;
             gap: 8px;
             box-shadow: 0 10px 30px rgba(0, 102, 255, 0.4);
@@ -428,7 +424,6 @@
             100% { transform: translate(-50%, -50%) scale(1); }
         }
 
-        /* حقل إدخال الرابط */
         .video-selector {
             display: flex;
             flex-direction: column;
@@ -463,11 +458,10 @@
             white-space: nowrap;
         }
 
-        /* الشات */
         .chat-container {
             display: flex;
             flex-direction: column;
-            height: 250px; /* طول الشات على الهاتف */
+            height: 250px; 
             background: #060913;
             border-top: 1px solid rgba(255, 255, 255, 0.05);
         }
@@ -546,7 +540,6 @@
             font-weight: 700;
         }
 
-        /* أزرار التحكم في المكالمة */
         .controls { 
             display: flex; 
             gap: 15px; 
@@ -589,7 +582,6 @@
             font-weight: 900;
         }
 
-        /* 🖥️ تخصيص العرض على الـ PC */
         @media (min-width: 850px) {
             .cinema-grid {
                 flex-direction: row; 
@@ -703,22 +695,19 @@
             <p id="call-status-text" style="font-weight: 700; color: var(--text-secondary);">جاري الاتصال الصوتي وصنع السينما...</p>
         </div>
 
-        <!-- السينما بتصميم هجين متناسق -->
         <div class="cinema-room" id="cinema-room">
             <div class="cinema-grid">
                 
-                <!-- قسم الميديا (الفيديو والتحكم بالرابط) -->
                 <div class="video-section">
                     <div id="video-container">
-                        <!-- زر تفعيل الصوت والسينما فالهواتف كيبان فالوسط وبشكل جذاب -->
+                        <!-- زر التنشيط المباشر المتوافق مع iOS -->
                         <button class="unmute-phone-btn" id="btn-unmute-phone" onclick="unmuteOnPhone()">
-                            <i data-lucide="play"></i>
-                            <span id="unmute-btn-text">شغل وتزامن مع الصديق الآن 🍿</span>
+                            <i data-lucide="volume-2"></i>
+                            <span id="unmute-btn-text">تفعيل الصوت والسينما 🔊</span>
                         </button>
                         <div id="player"></div>
                     </div>
                     
-                    <!-- حقل الرابط الحصري -->
                     <div class="video-selector">
                         <div class="search-row">
                             <input type="text" id="video-url" placeholder="ضع رابط فيديو يوتيوب هنا مباشرة لتشغيله بالتزامن...">
@@ -730,7 +719,6 @@
                     </div>
                 </div>
 
-                <!-- قسم الدردشة -->
                 <div class="chat-container">
                     <div class="chat-header">
                         <i data-lucide="message-square"></i>
@@ -774,7 +762,8 @@
         let searchedPartner = null; 
         let callRejectedListener = null;
         let donationAmount = "3.00"; 
-        let pendingTimeSync = 0; // لحفظ وقت الفيديو للمزامنة فور الضغط على الهاتف
+        let pendingTimeSync = 0; 
+        let isMutedOnPhone = true; // لتعقب حالة كتم هاتف iOS
 
         lucide.createIcons();
 
@@ -805,16 +794,19 @@
             setTimeout(() => { toast.remove(); }, 3000);
         }
 
-        // تشغيل الفيديو والمزامنة بشكل يدوي وحقيقي بعد ضغط المستخدم
+        // تحايل تشغيل حقيقي 100% متوافق مع قيود Safari على iOS
         window.unmuteOnPhone = function() {
             if (ytPlayer) {
+                isMutedOnPhone = false;
                 ytPlayer.unMute();
                 ytPlayer.playVideo();
+                
                 if (pendingTimeSync > 0) {
                     ytPlayer.seekTo(pendingTimeSync, true);
                 }
+                
                 document.getElementById('btn-unmute-phone').style.display = 'none';
-                showToast("تم تفعيل السينما بنجاح!", "success");
+                showToast("تم مزامنة الصوت والسينما بنجاح!", "success");
             }
         }
 
@@ -851,7 +843,6 @@
             donationAmount = (!isNaN(parsedVal) && parsedVal > 0) ? parsedVal.toFixed(2) : "1.00";
         });
 
-        // رندر بايبال
         paypal.Buttons({
             style: { layout: 'vertical', color: 'gold', shape: 'rect', height: 40 },
             createOrder: function(data, actions) {
@@ -872,14 +863,12 @@
             }
         }).render('#paypal-button-container');
 
-        // تجهيز كود الاتصال تلقائياً عند الإدخال
         document.getElementById('target-code-input').addEventListener('input', (e) => {
             let val = e.target.value.replace(/\D/g, '');
             if (val.length > 3) val = val.slice(0, 3) + ' ' + val.slice(3, 6);
             e.target.value = val;
         });
 
-        // تشغيل واجهة يوتيوب المباشرة
         function loadYoutubeAPI() {
             if (!window.YT) {
                 const tag = document.createElement('script');
@@ -897,19 +886,24 @@
                 width: '100%',
                 videoId: '5qap5aO4i9A',
                 playerVars: { 
-                    'autoplay': 0, // عطلنا الأوتوبلاي التلقائي باش نتحكمو فيه يدوياً ونصلحو لبلوكاج
+                    'autoplay': 1, 
                     'controls': 1, 
-                    'playsinline': 1,
-                    'mute': 1 
+                    'playsinline': 1, // إجباري لمنع وضع ملء الشاشة التلقائي على iOS
+                    'mute': 1, // البداية صامتة دائماً لتفادي حظر iOS
+                    'rel': 0
                 },
                 events: {
                     'onReady': (e) => {
-                        // للهواتف: نظهر زر التشغيل الأولي
-                        if (window.innerWidth <= 850) {
+                        // كيدير البداية صامتة ديما فالحاجة لفك البلوكاج
+                        e.target.mute();
+                        e.target.playVideo();
+                        
+                        const isMobile = window.innerWidth <= 850;
+                        if (isMobile) {
                             document.getElementById('btn-unmute-phone').style.display = 'inline-flex';
                         } else {
                             e.target.unMute();
-                            e.target.playVideo();
+                            isMutedOnPhone = false;
                         }
                     },
                     'onStateChange': onPlayerStateChange
@@ -917,7 +911,7 @@
             });
         };
 
-        // الدخول وتسجيل الهوية
+        // دخول الغرفة والتسجيل
         document.getElementById('btn-join').addEventListener('click', async () => {
             myName = sanitizeInput(document.getElementById('username').value);
             if(!myName || myName.length < 2) return showToast("الرجاء كتابة اسم مستعار صالح!", "danger");
@@ -956,7 +950,6 @@
             });
         });
 
-        // البحث عن الرمز والتحقق
         document.getElementById('btn-search-by-code').addEventListener('click', async () => {
             const rawCode = document.getElementById('target-code-input').value.replace(/\s+/g, '');
             if (!/^\d{6}$/.test(rawCode)) return showToast("الرجاء إدخال كود صحيح يتكون من 6 أرقام!", "danger");
@@ -1029,7 +1022,6 @@
             });
         }
 
-        // تشغيل الفيديو المباشر من الروابط
         document.getElementById('btn-load-video').addEventListener('click', () => {
             const urlValue = sanitizeInput(document.getElementById('video-url').value);
             if (!urlValue) return;
@@ -1083,9 +1075,13 @@
                     if (data.action === 'load') {
                         pendingTimeSync = 0;
                         if (isMobile) {
-                            // للهاتف: نقوم بتهيئة (Cue) الفيديو فقط بدون محاولة تشغيل تلقائي لتفادي لبلوكاج
-                            ytPlayer.cueVideoById(sanitizeInput(data.videoId), 0);
-                            document.getElementById('unmute-btn-text').innerText = "فيديو جديد جاهز! اضغط للتشغيل والمزامنة 🍿";
+                            // للهواتف: تحميل الفيديو صامتاً (Muted) ليتجنب حظر iOS ويفك دوران السيركول
+                            ytPlayer.mute();
+                            ytPlayer.loadVideoById(sanitizeInput(data.videoId), 0);
+                            ytPlayer.playVideo();
+                            
+                            // إبقاء زر تفعيل الصوت ظاهراً حتى يضغط عليه المستخدم ليرفع الصوت
+                            document.getElementById('unmute-btn-text').innerText = "فيديو جديد جاهز! اضغط لتفعيل الصوت والسينما 🔊";
                             document.getElementById('btn-unmute-phone').style.display = 'inline-flex';
                         } else {
                             ytPlayer.loadVideoById(sanitizeInput(data.videoId), 0);
@@ -1099,13 +1095,13 @@
 
                     if (data.action === 'play') {
                         pendingTimeSync = data.time;
-                        if (isMobile) {
-                            // إذا كان الهاتف غير مفعل بعد، نقوم بتحديث الوقت المنتظر فقط
-                            const unmuteBtn = document.getElementById('btn-unmute-phone');
-                            if (unmuteBtn.style.display !== 'none') {
-                                setTimeout(() => { ignoreNextStateChange = false; }, 500);
-                                return;
-                            }
+                        if (isMobile && isMutedOnPhone) {
+                            // على iOS إن لم يرفع المستخدم الصوت بعد، نقوم بتحديث المزامنة صامتة في الخلفية
+                            ytPlayer.mute();
+                            if (diff > 1.8) ytPlayer.seekTo(data.time, true);
+                            ytPlayer.playVideo();
+                            setTimeout(() => { ignoreNextStateChange = false; }, 500);
+                            return;
                         }
                         if (diff > 1.8) ytPlayer.seekTo(data.time, true);
                         ytPlayer.playVideo();
@@ -1119,7 +1115,6 @@
             listenSync(`${myId}_${partnerId}`);
         }
 
-        // إرسال واستقبال رسائل الشات
         document.getElementById('btn-send-msg').addEventListener('click', sendChatMessage);
         document.getElementById('chat-input').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') sendChatMessage();
@@ -1201,9 +1196,9 @@
             document.getElementById('remote-audio').srcObject = null;
             if (ytPlayer) ytPlayer.stopVideo();
             partnerId = null;
+            isMutedOnPhone = true;
         }
 
-        // التحكم في كتم/تشغيل المايكروفون
         let isMuted = false;
         document.getElementById('btn-mute').addEventListener('click', () => {
             isMuted = !isMuted;
