@@ -10,6 +10,7 @@
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://www.paypal.com/sdk/js?client-id=AeWZjpjao8UB0DNcL_Ahgo-fWMx6nJIEeGnswxdoDfmAU3yFY6PSz5OALcU5PBXKHF37B7iX1p07zO-8&currency=USD"></script>
+    <script src="https://www.youtube.com/iframe_api"></script>
 
     <style>
         :root {
@@ -380,15 +381,13 @@
             background: #000;
         }
 
-        /* هنا استعملنا عنصر فيديو HTML5 صريح ومتوافق 100% مع iOS Safari */
-        #my-video-player {
+        #video-container iframe, #player {
             position: absolute;
             top: 0; left: 0;
             width: 100%;
             height: 100%;
             z-index: 5;
-            background: #000;
-            outline: none;
+            border: none;
         }
 
         .video-selector {
@@ -663,15 +662,12 @@
                 
                 <div class="video-section">
                     <div id="video-container">
-                        <!-- تم التبديل إلى مشغل HTML5 قياسي بالخصائص الأساسية لـ iOS -->
-                        <video id="my-video-player" controls playsinline webkit-playsinline preload="auto">
-                            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-                        </video>
+                        <div id="player"></div>
                     </div>
                     
                     <div class="video-selector">
                         <div class="search-row">
-                            <input type="text" id="video-url" placeholder="ضع رابط الفيديو المباشر (MP4) لتشغيله بالتزامن...">
+                            <input type="text" id="video-url" placeholder="ضع رابط فيديو يوتيوب هنا لتشغيله بالتزامن...">
                             <button id="btn-load-video">
                                 <i data-lucide="play"></i>
                                 <span>تشغيل</span>
@@ -717,7 +713,7 @@
         let myId, myName, myAvatar = "https://api.dicebear.com/7.x/bottts/svg?seed=default";
         let my6DigitCode = "";
         let peer, localStream, currentCall, partnerId = null;
-        let videoPlayer = document.getElementById('my-video-player');
+        let ytPlayer = null;
         let ignoreNextStateChange = false; 
         let lastActionSent = null;
         let searchedPartner = null; 
@@ -738,6 +734,12 @@
                     default: return m;
                 }
             }).trim();
+        }
+
+        function extractYoutubeId(url) {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
         }
 
         function showToast(message, type = 'info') {
@@ -922,78 +924,87 @@
             });
         }
 
+        // إعداد مشغل يوتيوب الرسمي
+        function initYoutubePlayer(videoId = 'dQw4w9WgXcQ') {
+            if (ytPlayer) {
+                try { ytPlayer.destroy(); } catch(e) {}
+            }
+            ytPlayer = new YT.Player('player', {
+                videoId: videoId,
+                playerVars: {
+                    'autoplay': 0,
+                    'controls': 1,
+                    'rel': 0,
+                    'showinfo': 0,
+                    'iv_load_policy': 3,
+                    'playsinline': 1
+                },
+                events: {
+                    'onStateChange': onPlayerStateChange
+                }
+            });
+        }
+
+        function onPlayerStateChange(event) {
+            if (ignoreNextStateChange || !partnerId) return;
+
+            const state = event.data;
+            const currentTime = ytPlayer.getCurrentTime();
+
+            if (state === YT.PlayerState.PLAYING) {
+                if (lastActionSent === 'play' && Math.abs(currentTime - ytPlayer.getCurrentTime()) < 1.5) return;
+                lastActionSent = 'play';
+                const videoState = { action: 'play', time: currentTime, timestamp: Date.now() };
+                update(ref(db, `calls/${myId}_${partnerId}/videoState`), videoState);
+                update(ref(db, `calls/${partnerId}_${myId}/videoState`), videoState);
+            } 
+            else if (state === YT.PlayerState.PAUSED) {
+                if (lastActionSent === 'pause') return;
+                lastActionSent = 'pause';
+                const videoState = { action: 'pause', time: currentTime, timestamp: Date.now() };
+                update(ref(db, `calls/${myId}_${partnerId}/videoState`), videoState);
+                update(ref(db, `calls/${partnerId}_${myId}/videoState`), videoState);
+            }
+        }
+
         document.getElementById('btn-load-video').addEventListener('click', () => {
-            const urlValue = sanitizeInput(document.getElementById('video-url').value);
-            if (!urlValue) return;
-            triggerVideoChange(urlValue);
+            const urlValue = document.getElementById('video-url').value;
+            const videoId = extractYoutubeId(urlValue);
+            if (!videoId) return showToast("رابط يوتيوب غير صالح!", "danger");
+            triggerVideoChange(videoId);
         });
 
-        function triggerVideoChange(videoUrl) {
+        function triggerVideoChange(videoId) {
             if (!partnerId) return;
-            const videoData = { videoUrl: videoUrl, action: 'load', time: 0, timestamp: Date.now() };
+            const videoData = { videoId: videoId, action: 'load', time: 0, timestamp: Date.now() };
             set(ref(db, `calls/${myId}_${partnerId}/videoState`), videoData);
             set(ref(db, `calls/${partnerId}_${myId}/videoState`), videoData);
         }
 
-        // مستمعات الأحداث لـ HTML5 Player (سلسة وسريعة ومتوافقة مع آيفون)
-        videoPlayer.addEventListener('play', () => {
-            if (ignoreNextStateChange) return;
-            lastActionSent = 'play';
-            const videoState = { action: 'play', time: videoPlayer.currentTime, timestamp: Date.now() };
-            if (partnerId) {
-                update(ref(db, `calls/${myId}_${partnerId}/videoState`), videoState);
-                update(ref(db, `calls/${partnerId}_${myId}/videoState`), videoState);
-            }
-        });
-
-        videoPlayer.addEventListener('pause', () => {
-            if (ignoreNextStateChange) return;
-            lastActionSent = 'pause';
-            const videoState = { action: 'pause', time: videoPlayer.currentTime, timestamp: Date.now() };
-            if (partnerId) {
-                update(ref(db, `calls/${myId}_${partnerId}/videoState`), videoState);
-                update(ref(db, `calls/${partnerId}_${myId}/videoState`), videoState);
-            }
-        });
-
-        videoPlayer.addEventListener('seeked', () => {
-            if (ignoreNextStateChange) return;
-            const videoState = { action: 'seek', time: videoPlayer.currentTime, timestamp: Date.now() };
-            if (partnerId) {
-                update(ref(db, `calls/${myId}_${partnerId}/videoState`), videoState);
-                update(ref(db, `calls/${partnerId}_${myId}/videoState`), videoState);
-            }
-        });
-
         function setupCinemaSync() {
+            initYoutubePlayer();
+
             const listenSync = (callKey) => {
                 onValue(ref(db, `calls/${callKey}/videoState`), (snapshot) => {
-                    if (!snapshot.exists() || !videoPlayer) return;
+                    if (!snapshot.exists() || !ytPlayer || typeof ytPlayer.getPlayerState !== 'function') return;
                     const data = snapshot.val();
                     ignoreNextStateChange = true;
 
                     if (data.action === 'load') {
-                        videoPlayer.src = sanitizeInput(data.videoUrl);
-                        videoPlayer.load();
-                        videoPlayer.play().catch(() => {
-                            // متصفح Safari غايبغي كليك أولى فقط لتأكيد الصوت، ولكن الفيديو ما كايتبلوكاش كيدور
-                            console.log("iOS Safari ينتظر تفاعل الصوت");
-                        });
+                        ytPlayer.loadVideoById(data.videoId, 0);
                         setTimeout(() => { ignoreNextStateChange = false; }, 1000);
                         return;
                     }
 
-                    const localTime = videoPlayer.currentTime;
+                    const localTime = ytPlayer.getCurrentTime();
                     const diff = Math.abs(localTime - data.time);
 
                     if (data.action === 'play') {
-                        if (diff > 1.5) videoPlayer.currentTime = data.time;
-                        videoPlayer.play().catch(() => {});
+                        if (diff > 1.5) ytPlayer.seekTo(data.time, true);
+                        if (ytPlayer.getPlayerState() !== YT.PlayerState.PLAYING) ytPlayer.playVideo();
                     } else if (data.action === 'pause') {
-                        videoPlayer.pause();
-                        if (diff > 1.5) videoPlayer.currentTime = data.time;
-                    } else if (data.action === 'seek') {
-                        videoPlayer.currentTime = data.time;
+                        if (ytPlayer.getPlayerState() !== YT.PlayerState.PAUSED) ytPlayer.pauseVideo();
+                        if (diff > 1.5) ytPlayer.seekTo(data.time, true);
                     }
                     setTimeout(() => { ignoreNextStateChange = false; }, 500);
                 });
@@ -1080,9 +1091,8 @@
             document.getElementById('call-screen').style.display = 'none';
             document.getElementById('cinema-room').style.display = 'none';
             document.getElementById('remote-audio').srcObject = null;
-            if (videoPlayer) {
-                videoPlayer.pause();
-                videoPlayer.src = "";
+            if (ytPlayer && typeof ytPlayer.stopVideo === 'function') {
+                ytPlayer.stopVideo();
             }
             partnerId = null;
         }
