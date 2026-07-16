@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MyHouse Cozy Cinema</title>
     
+    <!-- استيراد خط Cairo الفخم والسميك -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@500;700;800;900&display=swap" rel="stylesheet">
+    
     <!-- PeerJS للمكالمات الصوتية المباشرة -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <!-- مكتبة Lucide للأيقونات العصرية -->
@@ -31,7 +34,7 @@
             box-sizing: border-box; 
             margin: 0; 
             padding: 0; 
-            font-family: system-ui, -apple-system, sans-serif; 
+            font-family: 'Cairo', system-ui, -apple-system, sans-serif; 
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -68,7 +71,7 @@
             border-radius: 12px;
             color: var(--text-main);
             font-size: 14px;
-            font-weight: 500;
+            font-weight: 700;
             display: flex;
             align-items: center;
             gap: 10px;
@@ -97,20 +100,21 @@
         }
         
         .container.app-expanded {
-            max-width: 650px; 
+            max-width: 500px; 
         }
         
         h1 { 
-            font-size: 22px; 
-            font-weight: 700; 
+            font-size: 24px; 
+            font-weight: 800; 
             margin-bottom: 8px; 
             color: var(--text-main); 
         }
 
         .subtitle {
-            font-size: 13px;
+            font-size: 14px;
             color: var(--text-secondary);
             margin-bottom: 24px;
+            font-weight: 500;
         }
         
         .avatar-picker { 
@@ -125,7 +129,7 @@
             height: 100%; 
             border-radius: 50%; 
             object-fit: cover; 
-            border: 2px solid var(--accent-blue); 
+            border: 3px solid var(--accent-blue); 
         }
         .avatar-picker input { display: none; }
         .avatar-overlay { 
@@ -150,12 +154,20 @@
             border-radius: 14px; 
             color: white; 
             font-size: 15px; 
+            font-weight: 700;
             margin-bottom: 20px; 
             outline: none; 
             text-align: center;
         }
         input[type="text"]:focus {
             border-color: var(--accent-blue);
+        }
+
+        /* إصلاح اتجاه كود الاتصال المدخل */
+        #target-code-input {
+            direction: ltr !important;
+            text-align: center;
+            letter-spacing: 2px;
         }
         
         button { 
@@ -165,8 +177,8 @@
             border: none; 
             border-radius: 14px; 
             color: white; 
-            font-size: 15px; 
-            font-weight: 600; 
+            font-size: 16px; 
+            font-weight: 700; 
             cursor: pointer; 
             transition: all 0.3s ease;
             display: inline-flex;
@@ -188,15 +200,19 @@
             margin-bottom: 20px;
         }
         .my-code-title {
-            font-size: 11px;
+            font-size: 12px;
             color: var(--text-muted);
             margin-bottom: 8px;
-        }
-        .my-code-value {
-            font-size: 26px;
             font-weight: 700;
+        }
+        /* منع انقلاب كود المستخدم */
+        .my-code-value {
+            font-size: 28px;
+            font-weight: 800;
             color: var(--accent-blue);
             letter-spacing: 3px;
+            direction: ltr !important;
+            display: inline-block;
         }
 
         .partner-found-card {
@@ -242,8 +258,8 @@
             text-align: center;
         }
         .support-title {
-            font-size: 13px;
-            font-weight: 700;
+            font-size: 14px;
+            font-weight: 800;
             color: var(--text-main);
             display: flex;
             align-items: center;
@@ -252,7 +268,7 @@
             margin-bottom: 6px;
         }
         .support-desc {
-            font-size: 11px;
+            font-size: 12px;
             color: var(--text-secondary);
             margin-bottom: 14px;
             line-height: 1.5;
@@ -269,8 +285,8 @@
             color: var(--text-main);
             padding: 6px 14px;
             border-radius: 8px;
-            font-size: 12px;
-            font-weight: 600;
+            font-size: 13px;
+            font-weight: 700;
             cursor: pointer;
             width: auto;
             transition: all 0.2s ease;
@@ -288,27 +304,28 @@
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 10px;
             padding: 4px 12px;
+            direction: ltr !important;
         }
         .custom-donation-wrapper input {
             background: transparent;
             border: none;
             outline: none;
             color: white;
-            font-size: 13px;
-            font-weight: 600;
+            font-size: 14px;
+            font-weight: 700;
             width: 100%;
-            text-align: right;
+            text-align: left;
             padding: 6px;
             margin-bottom: 0 !important;
         }
         .custom-donation-wrapper span {
             color: var(--text-secondary);
-            font-size: 13px;
-            font-weight: 700;
-            padding-right: 4px;
+            font-size: 14px;
+            font-weight: 800;
+            padding-left: 4px;
         }
 
-        /* شاشة المكالمة والسينما */
+        /* شاشة المكالمة والسينما للـ PC والموبايل */
         #call-screen { 
             display: none; 
             position: fixed; 
@@ -319,7 +336,7 @@
             flex-direction: column; 
             align-items: center; 
             justify-content: space-between; 
-            padding: 10px;
+            padding: 15px;
             overflow-y: auto;
         }
 
@@ -330,25 +347,44 @@
             justify-content: center;
             flex: 1;
         }
+        .calling-state-container h3 {
+            font-size: 22px;
+            font-weight: 800;
+            margin-bottom: 10px;
+        }
 
-        /* غرفة السينما والتحكم */
+        /* حاوية غرفة السينما المتكاملة */
         .cinema-room {
-            position: relative;
             width: 100%;
-            max-width: 900px;
+            max-width: 1150px;
             background: #000;
-            border-radius: 16px;
+            border-radius: 20px;
             overflow: hidden;
             display: none;
-            flex-direction: column;
             border: 1px solid var(--card-border);
             margin-top: 10px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+        }
+
+        /* نظام العرض المشترك بين الحاسوب والهاتف */
+        .cinema-grid {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        /* قسم الفيديو وأدوات التحكم */
+        .video-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #000;
         }
 
         #video-container {
             width: 100%;
             position: relative;
-            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            padding-bottom: 56.25%; /* نسبة 16:9 الافتراضية للهاتف */
             background: #000;
         }
 
@@ -360,102 +396,119 @@
             z-index: 5;
         }
 
-        /* حقل الرابط والبحث */
+        /* حقل إدخال الرابط */
         .video-selector {
             display: flex;
             flex-direction: column;
             gap: 8px;
             width: 100%;
-            padding: 12px;
+            padding: 15px;
             background: #080c14;
             border-top: 1px solid rgba(255, 255, 255, 0.04);
         }
         .search-row {
             display: flex;
-            gap: 8px;
+            gap: 10px;
         }
         .search-row input {
             flex: 1;
-            padding: 10px;
+            padding: 12px 16px;
             background: #03050a;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
             color: white;
-            font-size: 13px;
+            font-size: 14px;
+            font-weight: 700;
             margin-bottom: 0;
             text-align: right;
         }
         .search-row button {
             width: auto;
-            padding: 10px 16px;
-            font-size: 13px;
-            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 700;
+            border-radius: 10px;
+            white-space: nowrap;
         }
 
-        /* الشات المتكامل أسفل الفيديو */
+        /* الشات */
         .chat-container {
             display: flex;
             flex-direction: column;
-            height: 220px;
+            height: 250px; /* طول الشات على الهاتف */
             background: #060913;
-            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        .chat-header {
+            padding: 10px 15px;
+            background: #090e1c;
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--accent-blue);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            text-align: right;
         }
         .chat-messages {
             flex: 1;
             overflow-y: auto;
-            padding: 12px;
+            padding: 15px;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
         }
         .chat-msg {
             display: flex;
             align-items: flex-start;
-            gap: 8px;
-            font-size: 13px;
+            gap: 10px;
+            font-size: 13.5px;
             animation: slideUpFade 0.2s ease;
+            text-align: right;
         }
         .chat-msg img {
-            width: 28px;
-            height: 28px;
+            width: 32px;
+            height: 32px;
             border-radius: 50%;
             object-fit: cover;
         }
         .chat-msg-body {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            padding: 6px 10px;
-            border-radius: 12px;
-            max-width: 80%;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 8px 12px;
+            border-radius: 14px;
+            max-width: 85%;
             word-break: break-all;
         }
         .chat-msg-name {
-            font-weight: 700;
+            font-weight: 800;
             color: var(--accent-blue);
-            margin-bottom: 2px;
+            margin-bottom: 3px;
+            font-size: 12px;
         }
         .chat-input-row {
             display: flex;
-            padding: 8px;
+            padding: 10px;
             background: #04060c;
-            border-top: 1px solid rgba(255, 255, 255, 0.03);
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            gap: 8px;
         }
         .chat-input-row input {
             flex: 1;
-            padding: 10px;
+            padding: 12px;
             background: #080c14;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 10px;
             color: white;
-            font-size: 13px;
+            font-size: 13.5px;
+            font-weight: 700;
             margin-bottom: 0;
             text-align: right;
         }
         .chat-input-row button {
             width: auto;
-            padding: 10px 16px;
-            border-radius: 8px;
-            margin-right: 8px;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-size: 13.5px;
+            font-weight: 700;
         }
 
         /* أزرار التحكم في المكالمة */
@@ -464,11 +517,11 @@
             gap: 15px; 
             justify-content: center; 
             width: 100%; 
-            padding: 10px 0;
+            padding: 15px 0 5px;
         }
         .btn-control { 
-            width: 48px; 
-            height: 48px; 
+            width: 52px; 
+            height: 52px; 
             border-radius: 50%; 
             display: flex; 
             align-items: center; 
@@ -482,29 +535,44 @@
         .btn-hangup { background: var(--danger-red); }
         .btn-accept { 
             background: var(--success-green); 
-            border-radius: 24px; 
+            border-radius: 26px; 
             width: auto; 
-            padding: 0 16px; 
-            font-size: 13px; 
-            gap: 6px;
+            padding: 0 20px; 
+            font-size: 14px; 
+            font-weight: 700;
+            gap: 8px;
         }
 
         .optima-footer {
             margin-top: 25px;
-            font-size: 11px;
+            font-size: 12px;
+            font-weight: 700;
             color: var(--text-muted);
         }
         .optima-brand {
             color: var(--accent-blue);
-            font-weight: 700;
+            font-weight: 900;
         }
 
-        @media (max-width: 600px) {
-            .cinema-room {
-                margin-top: 5px;
+        /* 🖥️ تخصيص العرض على الـ PC (شاشات عرض أكبر من 850px) */
+        @media (min-width: 850px) {
+            .cinema-grid {
+                flex-direction: row; /* رندر جانبي: يسار ويمين */
+                height: 560px; /* حجم ثابت موحد للواجهة بالكامل */
+            }
+            .video-section {
+                flex: 7.2; /* حجم مشغل الفيديو */
+                height: 100%;
+                border-left: 1px solid rgba(255, 255, 255, 0.05);
+            }
+            #video-container {
+                padding-bottom: 0; /* إلغاء نسبة العرض للهاتف */
+                height: calc(100% - 73px); /* الفيديو يأخذ المساحة كاملة ما عدا شريط الرابط السفلي */
             }
             .chat-container {
-                height: 160px;
+                flex: 2.8; /* حجم الشات الجانبي */
+                height: 100% !important; /* ملء المساحة بالكامل عمودياً */
+                border-top: none;
             }
         }
     </style>
@@ -541,7 +609,7 @@
                 </div>
 
                 <div class="custom-donation-wrapper" id="custom-donation-box" style="display: none;">
-                    <input type="text" id="custom-amount-input" placeholder="اكتب المبلغ..." maxlength="6">
+                    <input type="text" id="custom-amount-input" placeholder="0.00" maxlength="6">
                     <span>USD $</span>
                 </div>
 
@@ -566,12 +634,12 @@
                 <div class="partner-found-info">
                     <img class="partner-found-avatar" id="found-avatar" src="" alt="">
                     <div>
-                        <div id="found-name">اسم الصديق</div>
+                        <div id="found-name" style="font-weight: 800;">اسم الصديق</div>
                     </div>
                 </div>
                 <div class="partner-found-buttons">
                     <button class="btn-mini btn-mini-cancel" id="btn-cancel-search">إلغاء</button>
-                    <button class="btn-mini" id="btn-start-actual-call" style="background: var(--success-green);">اتصال</button>
+                    <button class="btn-mini" id="btn-start-actual-call" style="background: var(--success-green); font-weight: 700;">اتصال</button>
                 </div>
             </div>
         </div>
@@ -581,31 +649,38 @@
     <div id="call-screen">
         <div class="calling-state-container" id="calling-state-view">
             <h3 id="call-user-name">اسم الطرف الآخر</h3>
-            <p id="call-status-text">جاري الاتصال الصوتي وصنع السينما...</p>
+            <p id="call-status-text" style="font-weight: 700; color: var(--text-secondary);">جاري الاتصال الصوتي وصنع السينما...</p>
         </div>
 
-        <!-- السينما بالتكامل التام -->
+        <!-- السينما بتصميم هجين متناسق -->
         <div class="cinema-room" id="cinema-room">
-            <!-- الفيديو مستقل بنسبة عرض 16:9 -->
-            <div id="video-container">
-                <div id="player"></div>
-            </div>
-
-            <!-- حقل الرابط والبحث المباشر -->
-            <div class="video-selector">
-                <div class="search-row">
-                    <input type="text" id="video-url" placeholder="ألصق رابط فيديو أو اكتب للبحث على يوتيوب...">
-                    <button id="btn-load-video">بحث / تشغيل</button>
+            <div class="cinema-grid">
+                
+                <!-- قسم الميديا (الفيديو والتحكم بالرابط) -->
+                <div class="video-section">
+                    <div id="video-container">
+                        <div id="player"></div>
+                    </div>
+                    
+                    <!-- حقل الرابط الحصري (بدون بحث عشوائي) -->
+                    <div class="video-selector">
+                        <div class="search-row">
+                            <input type="text" id="video-url" placeholder="ضع رابط فيديو يوتيوب هنا مباشرة لتشغيله بالتزامن...">
+                            <button id="btn-load-video">تشغيل الفيديو</button>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <!-- الشات الجديد أسفل شاشة السينما -->
-            <div class="chat-container">
-                <div class="chat-messages" id="chat-box"></div>
-                <div class="chat-input-row">
-                    <input type="text" id="chat-input" placeholder="اكتب رسالة هنا للغرفة...">
-                    <button id="btn-send-msg" style="background: var(--accent-blue);">إرسال</button>
+                <!-- قسم الدردشة المتكامل جانبي في الـ PC وأسفل في الموبايل -->
+                <div class="chat-container">
+                    <div class="chat-header">🎥 دردشة السينما المباشرة</div>
+                    <div class="chat-messages" id="chat-box"></div>
+                    <div class="chat-input-row">
+                        <input type="text" id="chat-input" placeholder="اكتب رسالة للغرفة...">
+                        <button id="btn-send-msg" style="background: var(--accent-blue);">إرسال</button>
+                    </div>
                 </div>
+
             </div>
         </div>
         
@@ -665,7 +740,7 @@
             setTimeout(() => { toast.remove(); }, 3000);
         }
 
-        // إعدادات مبالغ التبرع
+        // إعدادات التبرع المالي
         const presetButtons = document.querySelectorAll('.btn-preset');
         const customDonationBox = document.getElementById('custom-donation-box');
         const customAmountInput = document.getElementById('custom-amount-input');
@@ -719,14 +794,14 @@
             }
         }).render('#paypal-button-container');
 
-        // تجهيز كود الاتصال
+        // تجهيز كود الاتصال تلقائياً عند الإدخال
         document.getElementById('target-code-input').addEventListener('input', (e) => {
             let val = e.target.value.replace(/\D/g, '');
             if (val.length > 3) val = val.slice(0, 3) + ' ' + val.slice(3, 6);
             e.target.value = val;
         });
 
-        // تشغيل واجهة يوتيوب
+        // تشغيل واجهة يوتيوب المباشرة
         function loadYoutubeAPI() {
             if (!window.YT) {
                 const tag = document.createElement('script');
@@ -751,7 +826,7 @@
             });
         };
 
-        // الدخول وإنشاء حساب
+        // الدخول وتسجيل الهوية
         document.getElementById('btn-join').addEventListener('click', async () => {
             myName = sanitizeInput(document.getElementById('username').value);
             if(!myName || myName.length < 2) return showToast("الرجاء كتابة اسم مستعار صالح!", "danger");
@@ -790,14 +865,14 @@
             });
         });
 
-        // البحث والاتصال
+        // البحث عن الرمز والتحقق
         document.getElementById('btn-search-by-code').addEventListener('click', async () => {
             const rawCode = document.getElementById('target-code-input').value.replace(/\s+/g, '');
-            if (!/^\d{6}$/.test(rawCode)) return showToast("الرجاء إدخال كود صحيح!", "danger");
+            if (!/^\d{6}$/.test(rawCode)) return showToast("الرجاء إدخال كود صحيح يتكون من 6 أرقام!", "danger");
             if (rawCode === my6DigitCode) return showToast("لا يمكنك الاتصال بنفسك!", "danger");
 
             const codeSnapshot = await get(ref(db, 'codes/' + rawCode));
-            if (!codeSnapshot.exists()) return showToast("الرمز غير موجود!", "danger");
+            if (!codeSnapshot.exists()) return showToast("الرمز غير موجود أو غير متصل حالياً!", "danger");
 
             searchedPartner = codeSnapshot.val();
             document.getElementById('found-avatar').src = searchedPartner.avatar;
@@ -863,17 +938,16 @@
             });
         }
 
-        // محرك البحث والتشغيل الذكي من يوتيوب
+        // تشغيل الفيديو المباشر من الروابط فقط (تم حذف البحث)
         document.getElementById('btn-load-video').addEventListener('click', () => {
-            const query = sanitizeInput(document.getElementById('video-url').value);
-            if (!query) return;
+            const urlValue = sanitizeInput(document.getElementById('video-url').value);
+            if (!urlValue) return;
 
-            const videoId = extractYouTubeId(query);
+            const videoId = extractYouTubeId(urlValue);
             if (videoId) {
                 triggerVideoChange(videoId);
             } else {
-                showToast("جاري البحث عن الفيديو المباشر...", "info");
-                triggerVideoChange(query, true);
+                showToast("الرجاء إدخال رابط يوتيوب صالح ومباشر!", "danger");
             }
         });
 
@@ -883,10 +957,9 @@
             return (match && match[2].length === 11) ? match[2] : null;
         }
 
-        function triggerVideoChange(val, isSearch = false) {
+        function triggerVideoChange(videoId) {
             if (!partnerId) return;
-            let videoId = val;
-            const videoData = { videoId: videoId, action: 'load', time: 0, timestamp: Date.now(), isSearch: isSearch };
+            const videoData = { videoId: videoId, action: 'load', time: 0, timestamp: Date.now() };
             set(ref(db, `calls/${myId}_${partnerId}/videoState`), videoData);
             set(ref(db, `calls/${partnerId}_${myId}/videoState`), videoData);
         }
@@ -915,11 +988,7 @@
                     ignoreNextStateChange = true;
 
                     if (data.action === 'load') {
-                        if (data.isSearch) {
-                            ytPlayer.cuePlaylist({listType: 'search', list: data.videoId, index: 0});
-                        } else {
-                            ytPlayer.loadVideoById(sanitizeInput(data.videoId), 0);
-                        }
+                        ytPlayer.loadVideoById(sanitizeInput(data.videoId), 0);
                         setTimeout(() => { ignoreNextStateChange = false; }, 1000);
                         return;
                     }
@@ -940,7 +1009,7 @@
             listenSync(`${myId}_${partnerId}`);
         }
 
-        // إرسال رسائل الشات
+        // إرسال واستقبال رسائل الشات
         document.getElementById('btn-send-msg').addEventListener('click', sendChatMessage);
         document.getElementById('chat-input').addEventListener('keypress', (e) => {
             if (e.key === 'Enter') sendChatMessage();
@@ -982,7 +1051,7 @@
                         <img src="${msg.avatar}" alt="">
                         <div class="chat-msg-body">
                             <div class="chat-msg-name">${msg.sender}</div>
-                            <div>${msg.text}</div>
+                            <div style="font-weight: 700;">${msg.text}</div>
                         </div>
                     `;
                     chatBox.appendChild(msgDiv);
@@ -993,14 +1062,14 @@
 
         function handleCallStreams(call) {
             call.on('stream', (remoteStream) => {
-                showToast("تم الاتصال بنجاح!", "success");
+                showToast("تم الاتصال بالصوت والسينما بنجاح!", "success");
                 document.getElementById('calling-state-view').style.display = 'none';
-                document.getElementById('cinema-room').style.display = 'flex';
+                document.getElementById('cinema-room').style.display = 'block';
                 document.getElementById('remote-audio').srcObject = remoteStream;
             });
 
             call.on('close', () => {
-                showToast("انتهت المكالمة", "danger");
+                showToast("انتهت المكالمة الحالية", "danger");
                 endCallInterface();
             });
         }
@@ -1024,7 +1093,7 @@
             partnerId = null;
         }
 
-        // كتم المايكروفون
+        // التحكم في كتم/تشغيل المايكروفون
         let isMuted = false;
         document.getElementById('btn-mute').addEventListener('click', () => {
             isMuted = !isMuted;
