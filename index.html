@@ -396,34 +396,6 @@
             z-index: 5;
         }
 
-        /* زر التفعيل متوافق 100% مع iOS */
-        .unmute-phone-btn {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 100;
-            background: rgba(0, 102, 255, 0.95);
-            color: white;
-            border: none;
-            border-radius: 30px;
-            padding: 14px 22px;
-            font-size: 13px;
-            font-weight: 800;
-            display: none; 
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 10px 30px rgba(0, 102, 255, 0.4);
-            cursor: pointer;
-            transition: all 0.2s;
-            animation: pulseUnmute 1.5s infinite;
-        }
-        @keyframes pulseUnmute {
-            0% { transform: translate(-50%, -50%) scale(1); }
-            50% { transform: translate(-50%, -50%) scale(1.05); }
-            100% { transform: translate(-50%, -50%) scale(1); }
-        }
-
         .video-selector {
             display: flex;
             flex-direction: column;
@@ -700,11 +672,6 @@
                 
                 <div class="video-section">
                     <div id="video-container">
-                        <!-- زر التنشيط المباشر المتوافق مع iOS -->
-                        <button class="unmute-phone-btn" id="btn-unmute-phone" onclick="unmuteOnPhone()">
-                            <i data-lucide="volume-2"></i>
-                            <span id="unmute-btn-text">تفعيل الصوت والسينما 🔊</span>
-                        </button>
                         <div id="player"></div>
                     </div>
                     
@@ -762,8 +729,6 @@
         let searchedPartner = null; 
         let callRejectedListener = null;
         let donationAmount = "3.00"; 
-        let pendingTimeSync = 0; 
-        let isMutedOnPhone = true; // لتعقب حالة كتم هاتف iOS
 
         lucide.createIcons();
 
@@ -794,19 +759,15 @@
             setTimeout(() => { toast.remove(); }, 3000);
         }
 
-        // تحايل تشغيل حقيقي 100% متوافق مع قيود Safari على iOS
-        window.unmuteOnPhone = function() {
-            if (ytPlayer) {
-                isMutedOnPhone = false;
-                ytPlayer.unMute();
-                ytPlayer.playVideo();
-                
-                if (pendingTimeSync > 0) {
-                    ytPlayer.seekTo(pendingTimeSync, true);
+        // دالة لفك حظر متصفح Safari على iOS فوراً عند نقرة المستخدم على أي زر
+        function unlockIOSAudioVideo() {
+            if (ytPlayer && typeof ytPlayer.playVideo === 'function') {
+                try {
+                    ytPlayer.playVideo();
+                    ytPlayer.pauseVideo();
+                } catch (err) {
+                    console.log("إشارة فك الحظر منتظرة API", err);
                 }
-                
-                document.getElementById('btn-unmute-phone').style.display = 'none';
-                showToast("تم مزامنة الصوت والسينما بنجاح!", "success");
             }
         }
 
@@ -888,31 +849,26 @@
                 playerVars: { 
                     'autoplay': 1, 
                     'controls': 1, 
-                    'playsinline': 1, // إجباري لمنع وضع ملء الشاشة التلقائي على iOS
-                    'mute': 1, // البداية صامتة دائماً لتفادي حظر iOS
+                    'playsinline': 1, // إجباري لـ iOS لمنع الخروج لملء الشاشة تلقائياً
                     'rel': 0
                 },
                 events: {
                     'onReady': (e) => {
-                        // كيدير البداية صامتة ديما فالحاجة لفك البلوكاج
-                        e.target.mute();
+                        // كيبدا خدام بشكل افتراضي
                         e.target.playVideo();
-                        
-                        const isMobile = window.innerWidth <= 850;
-                        if (isMobile) {
-                            document.getElementById('btn-unmute-phone').style.display = 'inline-flex';
-                        } else {
-                            e.target.unMute();
-                            isMutedOnPhone = false;
-                        }
                     },
                     'onStateChange': onPlayerStateChange
                 }
             });
         };
 
+        // لود يوتيوب API فوراً باش يكون واجد من الدقة اللولة فاش يضغط المستخدم على دخول
+        loadYoutubeAPI();
+
         // دخول الغرفة والتسجيل
         document.getElementById('btn-join').addEventListener('click', async () => {
+            unlockIOSAudioVideo(); // فك الحظر في اللحظة صفر
+
             myName = sanitizeInput(document.getElementById('username').value);
             if(!myName || myName.length < 2) return showToast("الرجاء كتابة اسم مستعار صالح!", "danger");
 
@@ -945,12 +901,13 @@
                 document.getElementById('app-screen').style.display = 'block';
                 document.getElementById('main-container').classList.add('app-expanded');
                 
-                loadYoutubeAPI();
                 listenForIncomingCalls();
             });
         });
 
         document.getElementById('btn-search-by-code').addEventListener('click', async () => {
+            unlockIOSAudioVideo(); // تأكيد فك الحظر
+
             const rawCode = document.getElementById('target-code-input').value.replace(/\s+/g, '');
             if (!/^\d{6}$/.test(rawCode)) return showToast("الرجاء إدخال كود صحيح يتكون من 6 أرقام!", "danger");
             if (rawCode === my6DigitCode) return showToast("لا يمكنك الاتصال بنفسك!", "danger");
@@ -965,6 +922,8 @@
         });
 
         document.getElementById('btn-start-actual-call').addEventListener('click', () => {
+            unlockIOSAudioVideo(); // فك الحظر عند إطلاق مكالمة
+
             if (!searchedPartner) return;
             document.getElementById('partner-found-card').style.display = 'none';
             startCall(searchedPartner.peerId, searchedPartner.name, searchedPartner.avatar);
@@ -1013,6 +972,7 @@
                 document.getElementById('call-screen').style.display = 'flex';
 
                 document.getElementById('btn-accept').onclick = () => {
+                    unlockIOSAudioVideo(); // فك الحظر فور قبول الطرف الآخر المكالمة
                     currentCall.answer(localStream);
                     document.getElementById('btn-accept').style.display = 'none';
                     handleCallStreams(currentCall);
@@ -1023,6 +983,8 @@
         }
 
         document.getElementById('btn-load-video').addEventListener('click', () => {
+            unlockIOSAudioVideo(); // فك الحظر عند الضغط يدوياً لتشغيل فيديو
+
             const urlValue = sanitizeInput(document.getElementById('video-url').value);
             if (!urlValue) return;
 
@@ -1070,22 +1032,8 @@
                     const data = snapshot.val();
                     ignoreNextStateChange = true;
 
-                    const isMobile = window.innerWidth <= 850;
-
                     if (data.action === 'load') {
-                        pendingTimeSync = 0;
-                        if (isMobile) {
-                            // للهواتف: تحميل الفيديو صامتاً (Muted) ليتجنب حظر iOS ويفك دوران السيركول
-                            ytPlayer.mute();
-                            ytPlayer.loadVideoById(sanitizeInput(data.videoId), 0);
-                            ytPlayer.playVideo();
-                            
-                            // إبقاء زر تفعيل الصوت ظاهراً حتى يضغط عليه المستخدم ليرفع الصوت
-                            document.getElementById('unmute-btn-text').innerText = "فيديو جديد جاهز! اضغط لتفعيل الصوت والسينما 🔊";
-                            document.getElementById('btn-unmute-phone').style.display = 'inline-flex';
-                        } else {
-                            ytPlayer.loadVideoById(sanitizeInput(data.videoId), 0);
-                        }
+                        ytPlayer.loadVideoById(sanitizeInput(data.videoId), 0);
                         setTimeout(() => { ignoreNextStateChange = false; }, 1000);
                         return;
                     }
@@ -1094,15 +1042,6 @@
                     const diff = Math.abs(localTime - data.time);
 
                     if (data.action === 'play') {
-                        pendingTimeSync = data.time;
-                        if (isMobile && isMutedOnPhone) {
-                            // على iOS إن لم يرفع المستخدم الصوت بعد، نقوم بتحديث المزامنة صامتة في الخلفية
-                            ytPlayer.mute();
-                            if (diff > 1.8) ytPlayer.seekTo(data.time, true);
-                            ytPlayer.playVideo();
-                            setTimeout(() => { ignoreNextStateChange = false; }, 500);
-                            return;
-                        }
                         if (diff > 1.8) ytPlayer.seekTo(data.time, true);
                         ytPlayer.playVideo();
                     } else if (data.action === 'pause') {
@@ -1196,7 +1135,6 @@
             document.getElementById('remote-audio').srcObject = null;
             if (ytPlayer) ytPlayer.stopVideo();
             partnerId = null;
-            isMutedOnPhone = true;
         }
 
         let isMuted = false;
