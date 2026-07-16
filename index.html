@@ -108,6 +108,10 @@
             font-weight: 800; 
             margin-bottom: 8px; 
             color: var(--text-main); 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
         }
 
         .subtitle {
@@ -264,7 +268,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 6px;
+            gap: 8px;
             margin-bottom: 6px;
         }
         .support-desc {
@@ -442,11 +446,14 @@
         .chat-header {
             padding: 10px 15px;
             background: #090e1c;
-            font-size: 12px;
+            font-size: 13px;
             font-weight: 800;
             color: var(--accent-blue);
             border-bottom: 1px solid rgba(255, 255, 255, 0.03);
             text-align: right;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .chat-messages {
             flex: 1;
@@ -558,16 +565,23 @@
         @media (min-width: 850px) {
             .cinema-grid {
                 flex-direction: row; /* رندر جانبي: يسار ويمين */
-                height: 560px; /* حجم ثابت موحد للواجهة بالكامل */
+                height: 580px; /* الارتفاع الكافي لعرض الفيديو وأدوات الإدخال */
             }
             .video-section {
                 flex: 7.2; /* حجم مشغل الفيديو */
                 height: 100%;
+                display: flex;
+                flex-direction: column;
                 border-left: 1px solid rgba(255, 255, 255, 0.05);
             }
             #video-container {
                 padding-bottom: 0; /* إلغاء نسبة العرض للهاتف */
-                height: calc(100% - 73px); /* الفيديو يأخذ المساحة كاملة ما عدا شريط الرابط السفلي */
+                flex: 1; /* جعل مشغل الفيديو يتمدد ليأخذ كل المساحة المتاحة فوق الخانة */
+                position: relative;
+            }
+            .video-selector {
+                flex-shrink: 0; /* الحفاظ على أبعاد خانة الرابط ثابتة في الأسفل */
+                background: #080c14;
             }
             .chat-container {
                 flex: 2.8; /* حجم الشات الجانبي */
@@ -584,7 +598,10 @@
     <div class="container" id="main-container">
         <!-- 1. شاشة الدخول -->
         <div id="login-screen">
-            <h1>انضم إلى MyHouse Cinema</h1>
+            <h1>
+                <i data-lucide="tv"></i>
+                <span>انضم إلى MyHouse Cinema</span>
+            </h1>
             <p class="subtitle">تواصل بالصوت وشاهد فيديوهات يوتيوب بالتزامن</p>
             <div class="avatar-picker" onclick="document.getElementById('file-input').click()">
                 <img id="avatar-preview" src="https://api.dicebear.com/7.x/bottts/svg?seed=default" alt="Avatar">
@@ -621,7 +638,10 @@
 
         <!-- 2. شاشة البحث والاتصال -->
         <div id="app-screen">
-            <h1>غرفتك الخاصة 🔑</h1>
+            <h1>
+                <i data-lucide="key-round"></i>
+                <span>غرفتك الخاصة</span>
+            </h1>
             <div class="my-code-panel">
                 <div class="my-code-title">رمز الاتصال الخاص بك</div>
                 <div class="my-code-value" id="my-6digit-code">------</div>
@@ -666,18 +686,26 @@
                     <div class="video-selector">
                         <div class="search-row">
                             <input type="text" id="video-url" placeholder="ضع رابط فيديو يوتيوب هنا مباشرة لتشغيله بالتزامن...">
-                            <button id="btn-load-video">تشغيل الفيديو</button>
+                            <button id="btn-load-video">
+                                <i data-lucide="play"></i>
+                                <span>تشغيل</span>
+                            </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- قسم الدردشة المتكامل جانبي في الـ PC وأسفل في الموبايل -->
                 <div class="chat-container">
-                    <div class="chat-header">🎥 دردشة السينما المباشرة</div>
+                    <div class="chat-header">
+                        <i data-lucide="message-square"></i>
+                        <span>دردشة السينما المباشرة</span>
+                    </div>
                     <div class="chat-messages" id="chat-box"></div>
                     <div class="chat-input-row">
                         <input type="text" id="chat-input" placeholder="اكتب رسالة للغرفة...">
-                        <button id="btn-send-msg" style="background: var(--accent-blue);">إرسال</button>
+                        <button id="btn-send-msg" style="background: var(--accent-blue);">
+                            <i data-lucide="send"></i>
+                        </button>
                     </div>
                 </div>
 
@@ -711,6 +739,7 @@
         let callRejectedListener = null;
         let donationAmount = "3.00"; 
 
+        // تفعيل مكتبة Lucide للأيقونات بعد التحميل
         lucide.createIcons();
 
         function sanitizeInput(str) {
@@ -938,7 +967,7 @@
             });
         }
 
-        // تشغيل الفيديو المباشر من الروابط فقط (تم حذف البحث)
+        // تشغيل الفيديو المباشر من الروابط فقط
         document.getElementById('btn-load-video').addEventListener('click', () => {
             const urlValue = sanitizeInput(document.getElementById('video-url').value);
             if (!urlValue) return;
